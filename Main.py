@@ -2,6 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import heapq
 
+
 rutas = {}
 with open('rutas.txt', 'r') as file:
     for line in file:
@@ -11,19 +12,18 @@ with open('rutas.txt', 'r') as file:
         rutas.setdefault(salida, {})[destino] = costo
         rutas.setdefault(destino, {})[salida] = costo
 
-print("Las rutas establecidas son: ")
-print(rutas)
 
-G = nx.Graph()
+def mostrar_grafico(rutas):
+    G = nx.Graph()
+    for estacion in rutas.keys():
+        G.add_node(estacion)
+    for salida, destinos in rutas.items():
+        for destino, costo in destinos.items():
+            G.add_edge(salida, destino, weight=costo)
 
-for estacion in rutas.keys():
-    G.add_node(estacion)
-for salida, destinos in rutas.items():
-    for destino, costo in destinos.items():
-        G.add_edge(salida, destino, weight=costo)
-
-nx.draw(G, with_labels=True, node_color="purple", node_size=300)
-plt.margins(0.2)
+    nx.draw(G, with_labels=True, node_color="purple", node_size=300)
+    plt.margins(0.2)
+    plt.show()
 
 
 def djk(rutas, inicio):
@@ -35,7 +35,7 @@ def djk(rutas, inicio):
     while priority_Queue:
         distancia_actual, node_actual = heapq.heappop(priority_Queue)
 
-        for vecino, costo_De_Vecino in rutas[node_actual].items:
+        for vecino, costo_De_Vecino in rutas[node_actual].items():
             distancia_actualizada = distancia_actual + costo_De_Vecino
 
             if distancia_actualizada < distancias[vecino]:
@@ -54,6 +54,57 @@ def mostrar_rutas_y_costos(rutas, inicio):
         if destino != inicio:
             ruta = rutas_completas[destino] + [destino]
             if costo < float('inf'):
-                print(f"  - Hasta '{destino}': Ruta: {ruta}, Costo: {costo}")
+                print(f"  - Hasta {destino}: Ruta: {ruta}, Costo: {costo}")
             else:
-                print(f"  - Hasta '{destino}': Ruta no encontrada")
+                print(f"  - Hasta {destino}: Ruta no encontrada")
+
+def mostrar_rutas(rutas):
+    print("Las rutas establecidas son:")
+    print("------------------------")
+    for salida, destinos in rutas.items():
+        print(f"Desde {salida}:")
+        for destino, costo in destinos.items():
+            print(f"  - {destino}: Costo: {costo}")
+    print("------------------------")
+
+def menu():
+    while True:
+        print("------------------------")
+        print("  *** AGENDA DE VIAJES ***")
+        print("Bienvenido al Menu de Rutas!!")
+        print("1. Mostrar rutas establecidas")
+        print("2. Mostrar grafico")
+
+        print("-------Opcion de Rutas-------")
+
+        print("3. Pueblo Paleta")
+        print("4. Aldea Azalea")
+        print("5. Ciudad Safiro")
+        print("6. Aldea Fuego")
+        print("7. Ciudad Lavanda")
+        print("8. Salir")
+
+        opcion = input("Seleccione una opcion: \n >")
+
+        if opcion == '1':
+            mostrar_rutas(rutas)
+        elif opcion == '2':
+            mostrar_grafico(rutas)
+        elif opcion == '3':
+            mostrar_rutas_y_costos(rutas, 'Pueblo Paleta')
+        elif opcion == '4':
+            mostrar_rutas_y_costos(rutas,'Aldea Azalea')
+        elif opcion == '5':
+            mostrar_rutas_y_costos(rutas,'Ciudad Safiro')
+        elif opcion == '6':
+            mostrar_rutas_y_costos(rutas, 'Aldea Fuego')
+        elif opcion == '7':
+            mostrar_rutas_y_costos(rutas, 'Ciudad Lavanda')
+        elif opcion == '8':
+            print("Gracias por utilizar nuestra agenda de viajes ")
+            break
+        else:
+            print("Opción no válida. Por favor, seleccione una opción válida.")
+
+
+menu()
